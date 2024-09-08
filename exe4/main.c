@@ -20,13 +20,12 @@ SemaphoreHandle_t xSemaphore_g;
 
 void btn_callback(uint gpio, uint32_t events) {
     if (events == 0x4) { // fall edge
-        xSemaphoreGiveFromISR(xSemaphore_r, 0);
-    }
-}
-
-void btn_callback_g(uint gpio, uint32_t events) {
-    if (events == 0x4) { // fall edge
-        xSemaphoreGiveFromISR(xSemaphore_g, 0);
+        if(gpio == BTN_PIN_R){
+            xSemaphoreGiveFromISR(xSemaphore_r, 0);
+        }
+        else if(gpio == BTN_PIN_G){
+            xSemaphoreGiveFromISR(xSemaphore_g, 0);
+        }
     }
 }
 
@@ -96,7 +95,7 @@ void btn_2_task(void *p) {
     gpio_set_dir(BTN_PIN_G, GPIO_IN);
     gpio_pull_up(BTN_PIN_G);
     gpio_set_irq_enabled_with_callback(BTN_PIN_G, GPIO_IRQ_EDGE_FALL, true,
-                                       &btn_callback_g);
+                                       &btn_callback);
 
     int delay = 0;
     while (true) {
